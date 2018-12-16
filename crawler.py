@@ -52,10 +52,11 @@ def run_crawler(currency_eng):
 
 
 if __name__ == '__main__':
-    engine = create_engine('sqlite:///currency.db', echo=False)
+    engine = create_engine('sqlite:///./currency_web_backend//db.sqlite3', echo=False)
     currencies_eng = ['JPY', 'CNY', 'HKD', 'USD', 'EUR', 'GBP', 'AUD', 'SGD', 'KRW']
     for currency_eng in currencies_eng:
         df = run_crawler(currency_eng)
         time.sleep(5)
-        df.to_sql(currency_eng, con = engine, if_exists='replace', index=False)
+        print('currency_data_{}'.format(currency_eng.lower()))
+        df.to_sql('currency_data_{}'.format(currency_eng.lower()), con = engine, if_exists='replace', index=False)
         
