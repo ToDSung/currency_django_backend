@@ -5,8 +5,12 @@ from pyquery import PyQuery as pq
 import pandas as pd
 import configparser 
 import time
+import sqlalchemy
 from sqlalchemy import create_engine
+import datetime
 
+def string_to_datetime(text):
+    return datetime.datetime.strptime(text, '%Y/%m/%d').date()
 
 def run_crawler(currency_eng):
 
@@ -34,6 +38,14 @@ def run_crawler(currency_eng):
     currency_df = pd.DataFrame.from_dict(currency_dict)
     currency_df = currency_df.drop(currency_df.index[0])
     currency_df = currency_df.drop(currency_df.index[0])
+    currency_df['date'] = currency_df['date'].map(string_to_datetime)
+    currency_df['rate_cash_buy'] = currency_df['rate_cash_buy'].map(lambda  text: float(text))
+    currency_df['rate_cash_sell'] = currency_df['rate_cash_sell'].map(lambda  text: float(text))
+    currency_df['rate_sight_buy'] = currency_df['rate_sight_buy'].map(lambda  text: float(text))
+    currency_df['rate_sight_sell'] = currency_df['rate_sight_sell'].map(lambda  text: float(text))
+
+
+    
     # count data 
 
     # currency_df['DateValue'] = currency_df['DateValue'].astype('float64')
@@ -52,11 +64,17 @@ def run_crawler(currency_eng):
 
 
 if __name__ == '__main__':
+    dtype={'date':sqlalchemy.types.Date(),
+            'rate_cash_buy':sqlalchemy.types.FLOAT(),
+            'rate_cash_sell':sqlalchemy.types.FLOAT(),
+            'rate_sight_buy':sqlalchemy.types.FLOAT(),
+            'rate_sight_sell':sqlalchemy.types.FLOAT()
+    }
     engine = create_engine('sqlite:///./currency_web_backend//db.sqlite3', echo=False)
-    currencies_eng = ['JPY', 'CNY', 'HKD', 'USD', 'EUR', 'GBP', 'AUD', 'SGD', 'KRW']
+    currencies_eng = ['JPY', 'CNY', 'HKD', 'USD', 'EUR', 'GBP', 'AUD', 'SGD']
     for currency_eng in currencies_eng:
         df = run_crawler(currency_eng)
         time.sleep(5)
         print('currency_data_{}'.format(currency_eng.lower()))
-        df.to_sql('currency_data_{}'.format(currency_eng.lower()), con = engine, if_exists='replace', index=False)
+        df.to_sql('currency_data_{}'.format(currency_eng.lower()), con = engine, if_exists='replace', index=False, dtype=dtype)
         
