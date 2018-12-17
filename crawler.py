@@ -64,7 +64,7 @@ def run_crawler(currency_eng):
 
 
 if __name__ == '__main__':
-    dtype={'date':sqlalchemy.types.Date(),
+    dtype = {'date':sqlalchemy.types.Date(),
             'rate_cash_buy':sqlalchemy.types.FLOAT(),
             'rate_cash_sell':sqlalchemy.types.FLOAT(),
             'rate_sight_buy':sqlalchemy.types.FLOAT(),
@@ -76,5 +76,5 @@ if __name__ == '__main__':
         df = run_crawler(currency_eng)
         time.sleep(5)
         print('currency_data_{}'.format(currency_eng.lower()))
-        df.to_sql('currency_data_{}'.format(currency_eng.lower()), con = engine, if_exists='replace', index=False, dtype=dtype)
+        df.to_sql('currency_data_{}'.format(currency_eng.lower()), con = engine, if_exists='append', index=False, dtype=dtype)
         
