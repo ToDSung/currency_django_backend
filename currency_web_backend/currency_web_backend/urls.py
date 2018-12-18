@@ -20,5 +20,4 @@ from django.views.generic import RedirectView
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('currencies/', include('currency_data.urls')),
-    path('', RedirectView.as_view(url='/currency_data/')),
 ]
